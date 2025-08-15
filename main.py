@@ -169,26 +169,32 @@ def hover_handler_tile_alpha():
     display_raw.set_alpha(255)
 
 def buy_handler_select_place():
-    global mouse_pos
-    global mouse_state
-    global selected
-    global click_cooldown
-    global tile_hover_list
-    global tile_list_map
-    global stats
-    tile = []
-    tile_hover = 0
-    if selected != '' and click_cooldown[0] <= 0 and mouse_state[0] == True and mouse_pos[0] >= 160 and mouse_pos[0] <= 1160 and mouse_pos[1] >= 60 and mouse_pos[1] <= 660:
-        tile_hover = int((mouse_pos[0]-160)//50+(mouse_pos[1]-60)//50*10)
-        click_cooldown[0] = 10
-        for x in range(len(tile_hover_list)):
-            if tile_hover_list[x][2] == selected and stats[1]-tile_hover_list[x][4] >= 0:
-                tile = tile_hover_list[x]
-                stats[1] = stats[1]-tile_hover_list[x][4]
-                stats[3] += tile_hover_list[x][4]
-                tile_list_map[tile_hover] = tile
-                print(tile_hover)
-                break
+  global mouse_pos
+  global mouse_state
+  global selected
+  global click_cooldown
+  global tile_hover_list
+  global tile_list_map
+  global stats
+
+  if selected != '' and click_cooldown[0] <= 0 and mouse_state[0] == True:
+      if 160 <= mouse_pos[0] <= 1160 and 60 <= mouse_pos[1] <= 700:
+          grid_width = 1040 // 50 
+          tile_x = (mouse_pos[0] - 160) // 50
+          tile_y = (mouse_pos[1] - 60) // 50
+
+          tile_hover = tile_x + tile_y * grid_width
+
+          tile_hover = max(0, min(tile_hover, len(tile_list_map)-1))
+
+          for tile in tile_hover_list:
+              if tile[2] == selected and stats[1] - tile[4] >= 0:
+                  tile_list_map[tile_hover] = tile  
+                  stats[1] -= tile[4]            
+                  stats[3] += tile[4]            
+                  click_cooldown[0] = 10        
+                  print(f"Placed {selected} at index {tile_hover} (grid {tile_x}, {tile_y})")
+                  break
 
 #purely for debug
 def count_item_in_list(list_obj,item_obj):
